@@ -1,46 +1,51 @@
 # 👈 That's me! Hi, I'm Kajetan 👋
 
-### 🎓 Aspiring Software Engineer
+### 🚀 Software Engineer & AI Automation Enthusiast
 **3rd-year Computer Science Student – Silesian University of Technology**
 
 ---
 
 ### 👨‍💻 About Me
 
-**My journey with technology started early.** What began as creative play in **Scratch** and courses at **Giganci Programowania** (Coding Giants) quickly turned into a genuine passion for engineering
+I am a builder at heart. My journey started with a fascination for logic in games, but today, I focus on **solving real-world business problems** through code
 
-In high school, I combined my love for logic and gaming by participating in "Math Meetings" (*Spotkania z matematyką*). I delivered a presentation on **"Mathematics in Games,"** exploring the algorithms behind virtual worlds. That experience sparked my deep curiosity about how software is built "under the hood"
+As a student at **Politechnika Śląska**, I combine academic fundamentals (Algorithms, C++) with modern development practices. Currently, I am deeply invested in the **Generative AI** space, building tools that bridge the gap between complex technology and everyday business needs
 
-I am a **technology enthusiast** and a highly **open-minded person**. I value communication and connecting with people. Currently, I'm focusing on creating tools that optimize workflows, like my latest chatbot project
+My goal isn't just to write code—it's to deliver solutions that save time and optimize workflows
 
-**🏃 Personal:** I am a marathon finisher and a highly ambitious person who loves challenges. I believe that both coding and long-distance running require the same mindset: consistency, hard work, and the determination to always reach the finish line
+**🏃 Personal:** I am a **marathon finisher**. I believe that engineering requires the same mindset as long-distance running: consistency, resilience, and the determination to reach the finish line, no matter the distance
 
 ---
 
-### 🛠 My Tech Skills
+### 🛠 Tech Stack & Skills
 
-**Languages**
-
+**Core Languages**
 ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
 ![C++](https://img.shields.io/badge/C%2B%2B-00599C?style=for-the-badge&logo=c%2B%2B&logoColor=white)
 ![SQL](https://img.shields.io/badge/SQL-003B57?style=for-the-badge&logo=sqlite&logoColor=white)
 
-**Tools & IDEs**
+**AI & Automation (Current Focus)**
+![OpenAI](https://img.shields.io/badge/OpenAI_API-412991?style=for-the-badge&logo=openai&logoColor=white)
+![RAG](https://img.shields.io/badge/RAG_Architecture-FF6F00?style=for-the-badge)
+![Vector DB](https://img.shields.io/badge/Vector_Database-000000?style=for-the-badge)
 
+**Tools & Environment**
 ![Git](https://img.shields.io/badge/GIT-E44C30?style=for-the-badge&logo=git&logoColor=white)
-![Visual Studio](https://img.shields.io/badge/Visual%20Studio-5C2D91?style=for-the-badge&logo=visual%20studio&logoColor=white)
 ![VS Code](https://img.shields.io/badge/VS_Code-0078D4?style=for-the-badge&logo=visual%20studio%20code&logoColor=white)
-![OpenAI](https://img.shields.io/badge/OpenAI-412991?style=for-the-badge&logo=openai&logoColor=white)
 
 ---
 
-### 🚀 Featured Projects
+### 🚀 Featured Project
 
-**👉 [Window Sales Bot](https://github.com/Kajhol/chatbot-okna) 👈**
-> *Automated customer service & pricing tool for the construction industry*
-* **Goal:** Automate initial customer interviews and pricing estimates (24/7 availability)
-* **Tech:** Python 3.12, Custom Logic, Data Processing
-* **Status:** 🚧 In Development
+**👉 [AI Sales Assistant for Construction Industry](https://github.com/Kajhol/chatbot-okna) 👈**
+> *Commercial-grade RAG System for Lead Generation & Customer Support*
+
+Currently developing and deploying a specialized AI Agent for a window industry. This is not just a chatbot, but a business tool designed to automate the initial sales funnel
+
+* **Problem:** High volume of repetitive technical questions (pricing, specs) and missed leads outside office hours
+* **Solution:** An AI agent powered by **RAG (Retrieval-Augmented Generation)** that accesses the company's technical documentation to provide accurate answers and qualify leads
+* **Tech Stack:** Python, OpenAI API, Vector Database, Custom Prompt Engineering
+* **Status:** 🚧 *In Development*
 
 ---
 
@@ -50,8 +55,9 @@ I am a **technology enthusiast** and a highly **open-minded person**. I value co
 
 ---
 
-### 📫 Contact Me
+### 📫 Let's Connect
+I am open to internship opportunities and interesting projects
+
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/kajetan-hołdan-9b4a503a0/)
+[![Email](https://img.shields.io/badge/Email-D14836?style=for-the-badge&logo=gmail&logoColor=white)](mailto:kajetanhol@gmail.com)
 [![Facebook](https://img.shields.io/badge/Facebook-1877F2?style=for-the-badge&logo=facebook&logoColor=white)](https://www.facebook.com/profile.php?id=100010499717282)
-[![Email](https://img.shields.io/badge/Email-D14836?style=for-the-badge&logo=gmail&logoColor=white)](mailto:kajetanhol@gmail.com)  
-📧 **Email:** kajetanhol@gmail.com
