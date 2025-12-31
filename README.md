@@ -19,17 +19,17 @@ My goal isn't just to write code—it's to deliver solutions that save time and 
 
 ### 🛠 Tech Stack & Skills
 
-**Core Languages**
+**Core Languages**  
 ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
 ![C++](https://img.shields.io/badge/C%2B%2B-00599C?style=for-the-badge&logo=c%2B%2B&logoColor=white)
 ![SQL](https://img.shields.io/badge/SQL-003B57?style=for-the-badge&logo=sqlite&logoColor=white)
 
-**AI & Automation (Current Focus)**
+**AI & Automation (Current Focus)**  
 ![OpenAI](https://img.shields.io/badge/OpenAI_API-412991?style=for-the-badge&logo=openai&logoColor=white)
 ![RAG](https://img.shields.io/badge/RAG_Architecture-FF6F00?style=for-the-badge)
 ![Vector DB](https://img.shields.io/badge/Vector_Database-000000?style=for-the-badge)
 
-**Tools & Environment**
+**Tools & Environment**  
 ![Git](https://img.shields.io/badge/GIT-E44C30?style=for-the-badge&logo=git&logoColor=white)
 ![VS Code](https://img.shields.io/badge/VS_Code-0078D4?style=for-the-badge&logo=visual%20studio%20code&logoColor=white)
 
