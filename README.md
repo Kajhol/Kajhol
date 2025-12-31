@@ -1,7 +1,7 @@
 # 👈 That's me! Hi, I'm Kajetan 👋
 
 ### 🚀 Software Engineer & AI Automation Enthusiast
-**3rd-year Computer Science Student – Silesian University of Technology**
+**3rd-year Computer Science Student at Silesian University of Technology**
 
 ---
 
@@ -11,7 +11,7 @@ I am a builder at heart. My journey started with a fascination for logic in game
 
 As a student at **Politechnika Śląska**, I combine academic fundamentals (Algorithms, C++) with modern development practices. Currently, I am deeply invested in the **Generative AI** space, building tools that bridge the gap between complex technology and everyday business needs
 
-My goal isn't just to write code—it's to deliver solutions that save time and optimize workflows
+My goal isn't just to write code. I want to deliver solutions that save time and optimize workflows
 
 **🏃 Personal:** I am a **marathon finisher**. I believe that engineering requires the same mindset as long-distance running: consistency, resilience, and the determination to reach the finish line, no matter the distance
 
