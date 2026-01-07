@@ -45,7 +45,7 @@ Currently developing and deploying a specialized AI Agent for a window industry.
 * **Problem:** High volume of repetitive technical questions (pricing, specs) and missed leads outside office hours
 * **Solution:** An AI agent powered by **RAG (Retrieval-Augmented Generation)** that accesses the company's technical documentation to provide accurate answers and qualify leads
 * **Tech Stack:** Python, OpenAI API, Vector Database, Custom Prompt Engineering
-* **Status:** 🚧 *In Development*
+* **Status:** ⏸️ *Temporary Paused*
 
 ---
 
