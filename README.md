@@ -35,7 +35,7 @@ My goal isn't just to write code. I want to deliver solutions that save time and
 
 ---
 
-### 🚀 Featured Project
+### 🚀 Featured Projects
 
 **👉 [AI Sales Assistant for Construction Industry](https://github.com/Kajhol/chatbot-okna) 👈**
 > *Commercial-grade RAG System for Lead Generation & Customer Support*
@@ -46,6 +46,8 @@ Currently developing and deploying a specialized AI Agent for a window industry.
 * **Solution:** An AI agent powered by **RAG (Retrieval-Augmented Generation)** that accesses the company's technical documentation to provide accurate answers and qualify leads
 * **Tech Stack:** Python, OpenAI API, Vector Database, Custom Prompt Engineering
 * **Status:** ⏸️ *Temporary Paused*
+
+**👉 [AI Lead intake](https://github.com/Kajhol/lead-intake-n8n-demo) 👈**
 
 ---
 
