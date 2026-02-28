@@ -28,6 +28,9 @@ My goal isn't just to write code. I want to deliver solutions that save time and
 ![OpenAI](https://img.shields.io/badge/OpenAI_API-412991?style=for-the-badge&logo=openai&logoColor=white)
 ![RAG](https://img.shields.io/badge/RAG_Architecture-FF6F00?style=for-the-badge)
 ![Vector DB](https://img.shields.io/badge/Vector_Database-000000?style=for-the-badge)
+![n8n](https://img.shields.io/badge/n8n-FF6C5F?style=for-the-badge&logo=n8n&logoColor=white)
+![Anthropic](https://img.shields.io/badge/Anthropic_Claude-755139?style=for-the-badge&logo=anthropic&logoColor=white)
+![Google Gemini](https://img.shields.io/badge/Google_Gemini-8E75C2?style=for-the-badge&logo=googlegemini&logoColor=white)
 
 **Tools & Environment**  
 ![Git](https://img.shields.io/badge/GIT-E44C30?style=for-the-badge&logo=git&logoColor=white)
