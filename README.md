@@ -36,7 +36,19 @@ My goal isn't just to write code. I want to deliver solutions that save time and
 ---
 
 ### 🚀 Featured Projects
+**👉 [AI Sales Email Intelligence Workflow](https://github.com/Kajhol/sales-workflow-n8n) 👈**
+> *Human-in-the-Loop Automation for Lead Nurturing & CRM Integration*
+Advanced sales automation pipeline designed to bridge the gap between raw customer inquiries and professional, data-backed business communication while keeping the human expert in control.
 
+* **Problem:** Manual response drafting is time-consuming, and sales teams often struggle to quickly reference past successful projects during initial contact.
+* **Solution:** A multi-agent system that detects new leads in **Airtable**, automatically researches the company's portfolio for matching case studies, and drafts a personalized response.
+* **Human-in-the-Loop:** Features a validation gate via Gmail, where the agent refines the draft based on natural language feedback from the user before final delivery.
+* **Tech Stack:** n8n, Claude 3.5 Sonnet (Agent), Gemini 2.0 Flash (Classifier), LangChain, Airtable, Gmail API.
+* **Impact:** Ensures 100% consistency in communication and slashes the time-to-reply from minutes to seconds, without losing the "human touch."
+* **Status:** ✅ *Completed*
+<br>
+<br>
+  
 **👉 [AI Sales Assistant for Construction Industry](https://github.com/Kajhol/chatbot-okna) 👈**
 > *Commercial-grade RAG System for Lead Generation & Customer Support*
 
@@ -46,8 +58,6 @@ Currently developing and deploying a specialized AI Agent for a window industry.
 * **Solution:** An AI agent powered by **RAG (Retrieval-Augmented Generation)** that accesses the company's technical documentation to provide accurate answers and qualify leads
 * **Tech Stack:** Python, OpenAI API, Vector Database, Custom Prompt Engineering
 * **Status:** ⏸️ *Temporary Paused*
-
-**👉 [AI Lead intake](https://github.com/Kajhol/lead-intake-n8n-demo) 👈**
 
 ---
 
