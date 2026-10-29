@@ -36,10 +36,24 @@ SUBTITLES = [
     "Building AI tools that optimize workflows",
 ]
 
-# Robot: rysowany ze stopami w punkcie (0, 0), potem przesunięty i powiększony
-# tak, żeby zajmował prawie całą wysokość banera.
-ROBOT_POS = (1000, 320, 1.35)  # x stóp, y stóp, skala
-WAVE_BEGIN = 1.0               # kiedy podnosi rękę
+# Robot: rysowany ze stopami w punkcie (0, 0). Startuje mały na szczycie góry
+# („daleko”), schodzi i kończy duży, na prawie całą wysokość banera.
+ROBOT_START_SCALE = 0.28
+ROBOT_POS = (1000, 320, 1.35)  # x stóp, y stóp, skala — pozycja końcowa
+WALK_BEGIN, WALK_TIME = 1.0, 3.0
+ARRIVE = WALK_BEGIN + WALK_TIME  # wtedy staje, podnosi rękę i zaczyna mówić
+
+# Teksty w dymku — pisane po kolei, w nieskończonej pętli
+ROBOT_LINES = [
+    "hello, human!",
+    "01101000 01101001",  # „hi” w ASCII, binarnie
+    "beep boop. welcome!",
+    "while (alive) learn();",
+    "scanning terrain...",
+    'git commit -m "hi"',
+    "check out my repos ↓",
+]
+SAY_SLOT = 3.2  # sekundy na jeden tekst
 
 
 # --- Pole wysokości -----------------------------------------------------------
@@ -189,11 +203,14 @@ def to_path(pts):
 
 # --- Pisany tekst (SMIL, krok co znak) ----------------------------------------
 
-def typing_timelines(x0, char_w, slot=5.5, dt_type=0.05, dt_erase=0.016):
-    """Zwraca (czas cyklu, [klatki szerokości maski dla linii], klatki pozycji kursora)."""
-    total = slot * len(SUBTITLES)
+def typing_timelines(texts, x0, char_w, slot, dt_type=0.05, dt_erase=0.016):
+    """Każdy tekst dostaje swój przedział `slot` sekund: pisze się, stoi, kasuje.
+
+    Zwraca (czas cyklu, [klatki szerokości maski dla każdego tekstu], klatki pozycji kursora).
+    """
+    total = round(slot * len(texts), 3)
     lines, cursor = [], [(0.0, x0)]
-    for n_line, text in enumerate(SUBTITLES):
+    for n_line, text in enumerate(texts):
         n = len(text)
         s = n_line * slot
         erase_start = s + slot - n * dt_erase - 0.2
@@ -216,8 +233,30 @@ def smil(attr, frames, total, begin="0s"):
 
 # --- Robot --------------------------------------------------------------------
 
+def typed_lines(texts, x0, y, font_size, slot, begin, prefix, cursor_cls):
+    """Pisane linie tekstu w jednym miejscu: maska (clipPath) odsłania tekst znak po znaku,
+    kursor jedzie za ostatnim znakiem. Czcionka monospace, więc znak = 0.6 em."""
+    char_w = font_size * 0.6
+    total, frames_per_line, cursor_frames = typing_timelines(texts, x0, char_w, slot)
+    out = []
+    for n, (text, frames) in enumerate(zip(texts, frames_per_line)):
+        out.append(
+            f'<clipPath id="{prefix}{n}"><rect x="{x0}" y="{y - font_size * 1.2:.0f}" '
+            f'height="{font_size * 1.7:.0f}" width="0">{smil("width", frames, total, begin)}</rect></clipPath>'
+            f'<text x="{x0}" y="{y}" class="{prefix}" clip-path="url(#{prefix}{n})" '
+            f'textLength="{len(text) * char_w:.1f}" lengthAdjust="spacing">{escape(text)}</text>'
+        )
+    out.append(
+        f'<rect x="{x0}" y="{y - font_size * 0.95:.0f}" width="{char_w * 0.9:.0f}" '
+        f'height="{font_size * 1.2:.0f}" class="{cursor_cls}">{smil("x", cursor_frames, total, begin)}</rect>'
+    )
+    return "".join(out)
+
+
 def robot():
-    """Robot narysowany ze stopami w (0, 0). Kolejność rysowania = kolejność warstw."""
+    """Robot narysowany ze stopami w (0, 0). Kolejność rysowania = kolejność warstw.
+    Atrybut transform ustawia go w pozycji końcowej; animacja CSS `approach` nadpisuje
+    go na czas schodzenia ze szczytu."""
     rx, ry, rs = ROBOT_POS
     limb = f'fill="{LIMB}" stroke="{ACCENT}" stroke-width="2"'
     shell = f'fill="{SHELL}" stroke="{ACCENT}" stroke-width="2.5"'
@@ -227,23 +266,26 @@ def robot():
         for x, c, d in [(-17, WARM, .7), (-7, ACCENT, .9), (3, WARM, .6), (13, ACCENT, 1.1)]
     )
 
-    # Dymek po lewej stronie głowy; ogonek celuje w głowę
-    bx0, bx1, by0, by1 = 742, 912, 50, 90
+    # Dymek po lewej stronie głowy, szeroki na najdłuższy tekst; ogonek celuje w głowę
+    say_fs, pad = 14, 16
+    bx1, by0, by1 = 912, 50, 90
+    bx0 = bx1 - 2 * pad - max(len(t) for t in ROBOT_LINES) * say_fs * 0.6 - 10
     tip = (rx - 50 * rs - 4, ry - 158 * rs)
-    bubble = (f"M{bx0 + 14},{by0} H{bx1 - 14} Q{bx1},{by0} {bx1},{by0 + 14} V{by1 - 14} "
+    bubble = (f"M{bx0 + 14:.0f},{by0} H{bx1 - 14} Q{bx1},{by0} {bx1},{by0 + 14} V{by1 - 14} "
               f"Q{bx1},{by1} {bx1 - 14},{by1} H{bx1 - 18} L{tip[0]:.0f},{tip[1]:.0f} "
-              f"L{bx1 - 42},{by1} H{bx0 + 14} Q{bx0},{by1} {bx0},{by1 - 14} V{by0 + 14} "
-              f"Q{bx0},{by0} {bx0 + 14},{by0}Z")
-    bcx, bcy = (bx0 + bx1) / 2, by0 + 25
+              f"L{bx1 - 42},{by1} H{bx0 + 14:.0f} Q{bx0:.0f},{by1} {bx0:.0f},{by1 - 14} V{by0 + 14} "
+              f"Q{bx0:.0f},{by0} {bx0 + 14:.0f},{by0}Z")
+    said = typed_lines(ROBOT_LINES, round(bx0 + pad), by0 + 25, say_fs, SAY_SLOT,
+                       f"{ARRIVE + 0.6}s", "say", "blink say-cursor")
 
     return f"""
-  <g transform="translate({rx},{ry}) scale({rs})">
+  <g class="approach" transform="translate({rx},{ry}) scale({rs})">
     <ellipse cx="0" cy="2" rx="58" ry="9" fill="#000" opacity=".4"/>
-    <g class="rise" style="animation-delay:.3s">
     <g class="idle">
-      <rect x="-30" y="-44" width="20" height="40" rx="7" {limb}/><rect x="-37" y="-10" width="30" height="12" rx="6" {limb}/>
-      <rect x="10" y="-44" width="20" height="40" rx="7" {limb}/><rect x="7" y="-10" width="30" height="12" rx="6" {limb}/>
-      <rect x="-64" y="-110" width="16" height="54" rx="8" {limb}/><circle cx="-56" cy="-52" r="10" {limb}/>
+    <g class="bob">
+      <g class="legL"><rect x="-30" y="-44" width="20" height="40" rx="7" {limb}/><rect x="-37" y="-10" width="30" height="12" rx="6" {limb}/></g>
+      <g class="legR"><rect x="10" y="-44" width="20" height="40" rx="7" {limb}/><rect x="7" y="-10" width="30" height="12" rx="6" {limb}/></g>
+      <g class="armL"><rect x="-64" y="-110" width="16" height="54" rx="8" {limb}/><circle cx="-56" cy="-52" r="10" {limb}/></g>
       <g class="raise"><g class="wave"><rect x="48" y="-110" width="16" height="54" rx="8" {limb}/><circle cx="56" cy="-52" r="10" {limb}/></g></g>
       <rect x="-46" y="-118" width="92" height="80" rx="20" {shell}/>
       <rect x="-26" y="-102" width="52" height="34" rx="8" fill="{VISOR}"/>
@@ -263,8 +305,7 @@ def robot():
   </g>
   <g class="bubble" style="transform-origin:{tip[0]:.0f}px {tip[1]:.0f}px">
     <path d="{bubble}" fill="{BG0}" fill-opacity=".85" stroke="{ACCENT}" stroke-width="1.5"/>
-    <text x="{bcx:.0f}" y="{bcy}" class="say m1" text-anchor="middle">hello, human!</text>
-    <text x="{bcx:.0f}" y="{bcy}" class="say m2" text-anchor="middle">01101000 01101001</text>
+    {said}
   </g>"""
 
 
@@ -287,22 +328,19 @@ def build():
             f'<g class="{cls}" style="animation-delay:{2.6 + k * 0.22:.2f}s">{body}</g>'
         )
 
-    x0, fs = 64, 20
-    char_w = fs * 0.6
-    total, line_frames, cursor_frames = typing_timelines(x0, char_w)
+    # Robot startuje ze szczytu głównej góry
+    sub = h[:, 160:200]  # x ∈ [800, 1000)
+    jy, ix = np.unravel_index(np.argmax(sub), sub.shape)
+    sx, sy = (ix + 160) * STEP, jy * STEP + 8
+    rx, ry, rs = ROBOT_POS
+    steps = round(WALK_TIME / 0.6)  # jeden krok = 0.6 s
 
-    subtitles = []
-    for n, (text, frames) in enumerate(zip(SUBTITLES, line_frames)):
-        subtitles.append(
-            f'<clipPath id="type{n}"><rect x="{x0}" y="186" height="34" width="0">'
-            f'{smil("width", frames, total, "1.2s")}</rect></clipPath>'
-            f'<text x="{x0}" y="210" class="sub" clip-path="url(#type{n})" '
-            f'textLength="{len(text) * char_w:.1f}" lengthAdjust="spacing">{escape(text)}</text>'
-        )
+    x0, fs = 64, 20
+    subtitles = typed_lines(SUBTITLES, x0, 210, fs, 5.5, "1.2s", "sub", "blink sub-cursor")
 
     return f"""<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 {W} {H}" width="{W}" height="{H}" role="img" aria-labelledby="t d">
 <title id="t">Hi, I'm Kajetan</title>
-<desc id="d">Animated topographic map with a big waving robot and typed subtitles.</desc>
+<desc id="d">Animated topographic map with a robot that walks down from the summit, waves and keeps talking, plus typed subtitles.</desc>
 <style>
   .lv path {{ fill: none; stroke: {CONTOUR}; stroke-width: 1.1; stroke-opacity: .38;
              stroke-dasharray: 1; stroke-dashoffset: 1; animation: draw 2.2s ease-out forwards; }}
@@ -314,17 +352,32 @@ def build():
   .say {{ font: 600 14px {MONO}; fill: {TEXT}; }}
   .small {{ font: 10px {MONO}; fill: {MUTED}; }}
 
+  .sub-cursor, .say-cursor {{ fill: {ACCENT}; }}
+
   /* robot: transform-origin podany we współrzędnych robota (stopy = 0,0) */
-  .rise, .idle, .raise, .wave, .bubble {{ transform-box: view-box; }}
-  .idle {{ animation: hover 3.2s ease-in-out infinite; }}
-  .raise {{ transform-origin: 56px -104px; animation: raise .5s ease-out {WAVE_BEGIN}s forwards; }}
-  .wave {{ transform-origin: 56px -104px; animation: wave 3s ease-in-out {WAVE_BEGIN + 0.5}s infinite; }}
+  .approach, .idle, .bob, .legL, .legR, .armL, .raise, .wave, .bubble {{ transform-box: view-box; }}
+  .approach {{ animation: approach {WALK_TIME}s ease-in-out {WALK_BEGIN}s both; }}
+  .bob {{ animation: bob .6s linear {WALK_BEGIN}s {steps}; }}
+  .legL {{ animation: legL .6s linear {WALK_BEGIN}s {steps}; }}
+  .legR {{ animation: legR .6s linear {WALK_BEGIN}s {steps}; }}
+  .armL {{ transform-origin: -56px -104px; animation: swing .6s ease-in-out {WALK_BEGIN}s {steps}; }}
+  .idle {{ animation: hover 3.2s ease-in-out {ARRIVE}s infinite; }}
+  .raise {{ transform-origin: 56px -104px;
+           animation: swing .6s ease-in-out {WALK_BEGIN}s {steps} reverse, raise .5s ease-out {ARRIVE}s forwards; }}
+  .wave {{ transform-origin: 56px -104px; animation: wave 3s ease-in-out {ARRIVE + 0.5}s infinite; }}
   .eye {{ transform-box: fill-box; transform-origin: center; animation: blink-eye 4s infinite; }}
   .ant {{ animation: pulse 1.6s ease-in-out infinite; }}
   .bar {{ transform-box: fill-box; transform-origin: bottom; animation: eq ease-in-out infinite alternate; }}
-  .bubble {{ opacity: 0; animation: pop .45s cubic-bezier(.3,1.6,.5,1) {WAVE_BEGIN + 0.4}s forwards; }}
-  .m1 {{ animation: msg1 6s {WAVE_BEGIN + 0.4}s infinite; }}
-  .m2 {{ opacity: 0; animation: msg2 6s {WAVE_BEGIN + 0.4}s infinite; }}
+  .bubble {{ opacity: 0; animation: pop .45s cubic-bezier(.3,1.6,.5,1) {ARRIVE + 0.3}s forwards; }}
+  @keyframes approach {{
+    0% {{ opacity: 0; transform: translate({sx}px, {sy}px) scale({ROBOT_START_SCALE}); }}
+    12% {{ opacity: 1; }}
+    100% {{ opacity: 1; transform: translate({rx}px, {ry}px) scale({rs}); }}
+  }}
+  @keyframes bob {{ 25%, 75% {{ transform: translateY(-7px); }} }}
+  @keyframes legL {{ 25% {{ transform: translateY(-9px); }} 50% {{ transform: none; }} }}
+  @keyframes legR {{ 50% {{ transform: none; }} 75% {{ transform: translateY(-9px); }} }}
+  @keyframes swing {{ 25% {{ transform: rotate(14deg); }} 75% {{ transform: rotate(-14deg); }} }}
   @keyframes hover {{ 50% {{ transform: translateY(-4px); }} }}
   @keyframes raise {{ to {{ transform: rotate(-130deg); }} }}
   @keyframes wave {{
@@ -336,8 +389,6 @@ def build():
   @keyframes pulse {{ 50% {{ opacity: .35; }} }}
   @keyframes eq {{ from {{ transform: scaleY(.25); }} to {{ transform: scaleY(1); }} }}
   @keyframes pop {{ from {{ opacity: 0; transform: scale(.3); }} to {{ opacity: 1; transform: none; }} }}
-  @keyframes msg1 {{ 0%, 45% {{ opacity: 1; }} 50%, 95% {{ opacity: 0; }} 100% {{ opacity: 1; }} }}
-  @keyframes msg2 {{ 0%, 45% {{ opacity: 0; }} 50%, 95% {{ opacity: 1; }} 100% {{ opacity: 0; }} }}
   .rise {{ animation: rise .9s cubic-bezier(.2,.7,.2,1) both; }}
   .late {{ opacity: 0; animation: fade .8s 2.2s forwards; }}
   .blink {{ animation: blink 1s steps(1) infinite; }}
@@ -350,8 +401,8 @@ def build():
   @keyframes wobble {{ from {{ transform: rotate(-9deg); }} to {{ transform: rotate(7deg); }} }}
   @media (prefers-reduced-motion: reduce) {{
     .lv path {{ animation: none; stroke-dashoffset: 0; }}
-    .lv, .needle, .blink, .bubble, .m1, .rise {{ animation: none; opacity: 1; }}
-    .idle, .wave, .eye, .ant, .bar, .m2 {{ animation: none; }}
+    .lv, .needle, .blink, .bubble, .rise {{ animation: none; opacity: 1; }}
+    .approach, .idle, .bob, .legL, .legR, .armL, .wave, .eye, .ant, .bar {{ animation: none; }}
     .raise {{ animation: none; transform: rotate(-130deg); }}
   }}
 </style>
@@ -386,10 +437,7 @@ def build():
   <!-- tekst -->
   <g class="rise"><text x="{x0}" y="98" class="hello">&gt; that's me!</text></g>
   <g class="rise" style="animation-delay:.15s"><text x="{x0 - 3}" y="160" class="title">Hi, I'm Kajetan</text></g>
-  {"".join(subtitles)}
-  <rect x="{x0}" y="191" width="11" height="24" fill="{ACCENT}" class="blink">
-    {smil("x", cursor_frames, total, "1.2s")}
-  </rect>
+  {subtitles}
 
   <!-- podziałka i róża wiatrów -->
   <g class="late">
