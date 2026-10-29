@@ -17,13 +17,15 @@ import numpy as np
 W, H = 1200, 340
 STEP = 5  # rozdzielczość siatki w pikselach
 
-# Paleta
-BG0, BG1 = "#081619", "#0d2a2a"
-CONTOUR = "#2dd4bf"
-ACCENT = "#5eead4"
-ROUTE = "#fb923c"
-TEXT = "#ecfdf5"
-MUTED = "#6b9a92"
+# Paleta wzięta ze zdjęcia profilowego: granat koszulki, biel i błękit nadruku,
+# ciepły ceglasty pomarańcz tła.
+BG0, BG1 = "#080f24", "#15214a"
+CONTOUR = "#7f9cd6"
+ACCENT = "#a9c8ff"
+WARM = "#ef8a5a"
+TEXT = "#f5f7fb"
+MUTED = "#7d8fb8"
+SHELL, LIMB, VISOR = "#1f3263", "#18284f", "#060c1d"
 
 MONO = "Consolas, 'DejaVu Sans Mono', Menlo, 'Courier New', monospace"
 SANS = "'Segoe UI', 'Helvetica Neue', Ubuntu, Arial, sans-serif"
@@ -34,11 +36,10 @@ SUBTITLES = [
     "Building AI tools that optimize workflows",
 ]
 
-# Robot: rysowany ze stopami w punkcie (0, 0); CSS przesuwa go ze szczytu do przodu.
-ROBOT_START_SCALE = 0.28    # na szczycie: mały, „daleko”
-ROBOT_END = (990, 322, 1.0)  # x, y, skala — duży, „przy ekranie”
-WALK_BEGIN, WALK_TIME = 1.2, 3.0
-ARRIVE = WALK_BEGIN + WALK_TIME
+# Robot: rysowany ze stopami w punkcie (0, 0), potem przesunięty i powiększony
+# tak, żeby zajmował prawie całą wysokość banera.
+ROBOT_POS = (1000, 320, 1.35)  # x stóp, y stóp, skala
+WAVE_BEGIN = 1.0               # kiedy podnosi rękę
 
 
 # --- Pole wysokości -----------------------------------------------------------
@@ -217,41 +218,53 @@ def smil(attr, frames, total, begin="0s"):
 
 def robot():
     """Robot narysowany ze stopami w (0, 0). Kolejność rysowania = kolejność warstw."""
-    limb = f'fill="#0f3532" stroke="{ACCENT}" stroke-width="2"'
-    shell = f'fill="#14403d" stroke="{ACCENT}" stroke-width="2.5"'
+    rx, ry, rs = ROBOT_POS
+    limb = f'fill="{LIMB}" stroke="{ACCENT}" stroke-width="2"'
+    shell = f'fill="{SHELL}" stroke="{ACCENT}" stroke-width="2.5"'
     bars = "".join(
         f'<rect class="bar" x="{x}" y="-92" width="6" height="18" rx="2" fill="{c}" '
         f'style="animation-duration:{d}s;animation-delay:-{d / 2:.2f}s"/>'
-        for x, c, d in [(-17, ROUTE, .7), (-7, ACCENT, .9), (3, ROUTE, .6), (13, ACCENT, 1.1)]
+        for x, c, d in [(-17, WARM, .7), (-7, ACCENT, .9), (3, WARM, .6), (13, ACCENT, 1.1)]
     )
+
+    # Dymek po lewej stronie głowy; ogonek celuje w głowę
+    bx0, bx1, by0, by1 = 742, 912, 50, 90
+    tip = (rx - 50 * rs - 4, ry - 158 * rs)
+    bubble = (f"M{bx0 + 14},{by0} H{bx1 - 14} Q{bx1},{by0} {bx1},{by0 + 14} V{by1 - 14} "
+              f"Q{bx1},{by1} {bx1 - 14},{by1} H{bx1 - 18} L{tip[0]:.0f},{tip[1]:.0f} "
+              f"L{bx1 - 42},{by1} H{bx0 + 14} Q{bx0},{by1} {bx0},{by1 - 14} V{by0 + 14} "
+              f"Q{bx0},{by0} {bx0 + 14},{by0}Z")
+    bcx, bcy = (bx0 + bx1) / 2, by0 + 25
+
     return f"""
-  <g class="approach">
-    <ellipse cx="0" cy="2" rx="54" ry="9" fill="#000" opacity=".35"/>
-    <g class="bob">
-      <g class="legL"><rect x="-30" y="-44" width="20" height="40" rx="7" {limb}/><rect x="-37" y="-10" width="30" height="12" rx="6" {limb}/></g>
-      <g class="legR"><rect x="10" y="-44" width="20" height="40" rx="7" {limb}/><rect x="7" y="-10" width="30" height="12" rx="6" {limb}/></g>
-      <g class="armL"><rect x="-64" y="-110" width="16" height="54" rx="8" {limb}/><circle cx="-56" cy="-52" r="10" {limb}/></g>
+  <g transform="translate({rx},{ry}) scale({rs})">
+    <ellipse cx="0" cy="2" rx="58" ry="9" fill="#000" opacity=".4"/>
+    <g class="rise" style="animation-delay:.3s">
+    <g class="idle">
+      <rect x="-30" y="-44" width="20" height="40" rx="7" {limb}/><rect x="-37" y="-10" width="30" height="12" rx="6" {limb}/>
+      <rect x="10" y="-44" width="20" height="40" rx="7" {limb}/><rect x="7" y="-10" width="30" height="12" rx="6" {limb}/>
+      <rect x="-64" y="-110" width="16" height="54" rx="8" {limb}/><circle cx="-56" cy="-52" r="10" {limb}/>
       <g class="raise"><g class="wave"><rect x="48" y="-110" width="16" height="54" rx="8" {limb}/><circle cx="56" cy="-52" r="10" {limb}/></g></g>
       <rect x="-46" y="-118" width="92" height="80" rx="20" {shell}/>
-      <rect x="-26" y="-102" width="52" height="34" rx="8" fill="#041012"/>
+      <rect x="-26" y="-102" width="52" height="34" rx="8" fill="{VISOR}"/>
       {bars}
       <rect x="-9" y="-130" width="18" height="14" rx="4" {limb}/>
       <line x1="0" y1="-190" x2="0" y2="-206" stroke="{ACCENT}" stroke-width="3"/>
-      <circle class="ant" cx="0" cy="-211" r="7" fill="{ROUTE}" filter="url(#glow)"/>
+      <circle class="ant" cx="0" cy="-211" r="7" fill="{WARM}" filter="url(#glow)"/>
       <rect x="-60" y="-170" width="14" height="28" rx="5" {limb}/>
       <rect x="46" y="-170" width="14" height="28" rx="5" {limb}/>
       <rect x="-50" y="-192" width="100" height="66" rx="22" {shell}/>
-      <rect x="-38" y="-180" width="76" height="42" rx="14" fill="#041012"/>
+      <rect x="-38" y="-180" width="76" height="42" rx="14" fill="{VISOR}"/>
       <rect class="eye" x="-25" y="-170" width="14" height="18" rx="6" fill="{ACCENT}" filter="url(#glow)"/>
       <rect class="eye" x="11" y="-170" width="14" height="18" rx="6" fill="{ACCENT}" filter="url(#glow)"/>
-      <path d="M-11,-149 Q0,-141 11,-149" fill="none" stroke="{ACCENT}" stroke-width="3" stroke-linecap="round"/>
+      <path d="M-11,-149 Q0,-141 11,-149" fill="none" stroke="{WARM}" stroke-width="3" stroke-linecap="round"/>
+    </g>
     </g>
   </g>
-  <g class="bubble">
-    <path d="M778,84 H930 Q946,84 946,100 V108 Q946,124 930,124 H922 L938,142 L904,124 H778 Q762,124 762,108 V100 Q762,84 778,84Z"
-          fill="{BG0}" fill-opacity=".85" stroke="{ACCENT}" stroke-width="1.5"/>
-    <text x="854" y="109" class="say m1" text-anchor="middle">hello, human!</text>
-    <text x="854" y="109" class="say m2" text-anchor="middle">01101000 01101001</text>
+  <g class="bubble" style="transform-origin:{tip[0]:.0f}px {tip[1]:.0f}px">
+    <path d="{bubble}" fill="{BG0}" fill-opacity=".85" stroke="{ACCENT}" stroke-width="1.5"/>
+    <text x="{bcx:.0f}" y="{bcy}" class="say m1" text-anchor="middle">hello, human!</text>
+    <text x="{bcx:.0f}" y="{bcy}" class="say m2" text-anchor="middle">01101000 01101001</text>
   </g>"""
 
 
@@ -259,13 +272,6 @@ def robot():
 
 def build():
     h = height_field()
-
-    # Robot startuje ze szczytu głównej góry
-    sub = h[:, 160:200]  # x ∈ [800, 1000)
-    jy, ix = np.unravel_index(np.argmax(sub), sub.shape)
-    sx, sy = (ix + 160) * STEP, jy * STEP
-    ex, ey, es = ROBOT_END
-    steps = round(WALK_TIME / 0.6)  # jeden krok = 0.6 s
 
     levels = np.arange(0.10, h.max(), 0.065)
     contour_svg = []
@@ -296,12 +302,12 @@ def build():
 
     return f"""<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 {W} {H}" width="{W}" height="{H}" role="img" aria-labelledby="t d">
 <title id="t">Hi, I'm Kajetan</title>
-<desc id="d">Animated topographic map with a small robot that walks down from the summit and waves, plus typed subtitles.</desc>
+<desc id="d">Animated topographic map with a big waving robot and typed subtitles.</desc>
 <style>
   .lv path {{ fill: none; stroke: {CONTOUR}; stroke-width: 1.1; stroke-opacity: .38;
              stroke-dasharray: 1; stroke-dashoffset: 1; animation: draw 2.2s ease-out forwards; }}
   .lv.major path {{ stroke: {ACCENT}; stroke-width: 1.8; stroke-opacity: .7; }}
-  .lv {{ animation: wave 7s ease-in-out infinite; }}
+  .lv {{ animation: elev 7s ease-in-out infinite; }}
   .title {{ font: 700 58px {SANS}; fill: {TEXT}; }}
   .hello {{ font: 16px {MONO}; fill: {MUTED}; }}
   .sub {{ font: {fs}px {MONO}; fill: {ACCENT}; }}
@@ -309,36 +315,22 @@ def build():
   .small {{ font: 10px {MONO}; fill: {MUTED}; }}
 
   /* robot: transform-origin podany we współrzędnych robota (stopy = 0,0) */
-  .approach, .bob, .legL, .legR, .armL, .raise, .wave, .bubble {{ transform-box: view-box; }}
-  .approach {{ animation: approach {WALK_TIME}s ease-in-out {WALK_BEGIN}s both; }}
-  .bob {{ animation: bob .6s linear {WALK_BEGIN}s {steps}; }}
-  .legL {{ animation: legL .6s linear {WALK_BEGIN}s {steps}; }}
-  .legR {{ animation: legR .6s linear {WALK_BEGIN}s {steps}; }}
-  .armL {{ transform-origin: -56px -104px; animation: swing .6s ease-in-out {WALK_BEGIN}s {steps}; }}
-  .raise {{ transform-origin: 56px -104px;
-           animation: swing .6s ease-in-out {WALK_BEGIN}s {steps} reverse, raise .5s ease-out {ARRIVE}s forwards; }}
-  .wave {{ transform-origin: 56px -104px; animation: wave 3s ease-in-out {ARRIVE + 0.5}s infinite; }}
+  .rise, .idle, .raise, .wave, .bubble {{ transform-box: view-box; }}
+  .idle {{ animation: hover 3.2s ease-in-out infinite; }}
+  .raise {{ transform-origin: 56px -104px; animation: raise .5s ease-out {WAVE_BEGIN}s forwards; }}
+  .wave {{ transform-origin: 56px -104px; animation: wave 3s ease-in-out {WAVE_BEGIN + 0.5}s infinite; }}
   .eye {{ transform-box: fill-box; transform-origin: center; animation: blink-eye 4s infinite; }}
   .ant {{ animation: pulse 1.6s ease-in-out infinite; }}
   .bar {{ transform-box: fill-box; transform-origin: bottom; animation: eq ease-in-out infinite alternate; }}
-  .bubble {{ opacity: 0; transform-origin: 938px 142px;
-            animation: pop .45s cubic-bezier(.3,1.6,.5,1) {ARRIVE + 0.4}s forwards; }}
-  .m1 {{ animation: msg1 6s {ARRIVE + 0.4}s infinite; }}
-  .m2 {{ opacity: 0; animation: msg2 6s {ARRIVE + 0.4}s infinite; }}
-  @keyframes approach {{
-    0% {{ opacity: 0; transform: translate({sx}px, {sy + 8}px) scale({ROBOT_START_SCALE}); }}
-    12% {{ opacity: 1; }}
-    100% {{ opacity: 1; transform: translate({ex}px, {ey}px) scale({es}); }}
-  }}
-  @keyframes bob {{ 25%, 75% {{ transform: translateY(-7px); }} }}
-  @keyframes legL {{ 25% {{ transform: translateY(-9px); }} 50% {{ transform: none; }} }}
-  @keyframes legR {{ 50% {{ transform: none; }} 75% {{ transform: translateY(-9px); }} }}
-  @keyframes swing {{ 25% {{ transform: rotate(14deg); }} 75% {{ transform: rotate(-14deg); }} }}
-  @keyframes raise {{ to {{ transform: rotate(-150deg); }} }}
+  .bubble {{ opacity: 0; animation: pop .45s cubic-bezier(.3,1.6,.5,1) {WAVE_BEGIN + 0.4}s forwards; }}
+  .m1 {{ animation: msg1 6s {WAVE_BEGIN + 0.4}s infinite; }}
+  .m2 {{ opacity: 0; animation: msg2 6s {WAVE_BEGIN + 0.4}s infinite; }}
+  @keyframes hover {{ 50% {{ transform: translateY(-4px); }} }}
+  @keyframes raise {{ to {{ transform: rotate(-130deg); }} }}
   @keyframes wave {{
     0%, 60%, 100% {{ transform: rotate(0); }}
-    10%, 30%, 50% {{ transform: rotate(-22deg); }}
-    20%, 40% {{ transform: rotate(14deg); }}
+    10%, 30%, 50% {{ transform: rotate(22deg); }}
+    20%, 40% {{ transform: rotate(-12deg); }}
   }}
   @keyframes blink-eye {{ 0%, 92%, 100% {{ transform: scaleY(1); }} 96% {{ transform: scaleY(.1); }} }}
   @keyframes pulse {{ 50% {{ opacity: .35; }} }}
@@ -351,16 +343,16 @@ def build():
   .blink {{ animation: blink 1s steps(1) infinite; }}
   .needle {{ transform-origin: 1140px 285px; animation: wobble 5s ease-in-out infinite alternate; }}
   @keyframes draw {{ to {{ stroke-dashoffset: 0; }} }}
-  @keyframes wave {{ 0%, 30%, 100% {{ opacity: .7; }} 15% {{ opacity: 1; }} }}
+  @keyframes elev {{ 0%, 30%, 100% {{ opacity: .7; }} 15% {{ opacity: 1; }} }}
   @keyframes fade {{ to {{ opacity: 1; }} }}
   @keyframes rise {{ from {{ opacity: 0; transform: translateY(14px); }} to {{ opacity: 1; transform: none; }} }}
   @keyframes blink {{ 50% {{ opacity: 0; }} }}
   @keyframes wobble {{ from {{ transform: rotate(-9deg); }} to {{ transform: rotate(7deg); }} }}
   @media (prefers-reduced-motion: reduce) {{
     .lv path {{ animation: none; stroke-dashoffset: 0; }}
-    .lv, .needle, .blink, .bubble, .m1 {{ animation: none; opacity: 1; }}
-    .approach {{ animation: none; transform: translate({ex}px, {ey}px); }}
-    .bob, .legL, .legR, .armL, .raise, .wave, .eye, .ant, .bar, .m2 {{ animation: none; }}
+    .lv, .needle, .blink, .bubble, .m1, .rise {{ animation: none; opacity: 1; }}
+    .idle, .wave, .eye, .ant, .bar, .m2 {{ animation: none; }}
+    .raise {{ animation: none; transform: rotate(-130deg); }}
   }}
 </style>
 <defs>
@@ -410,7 +402,7 @@ def build():
   <g class="late">
     <circle cx="1140" cy="285" r="20" fill="{BG0}" fill-opacity=".6" stroke="{MUTED}"/>
     <g class="needle">
-      <path d="M1140,268 L1145,285 L1140,282 L1135,285Z" fill="{ROUTE}"/>
+      <path d="M1140,268 L1145,285 L1140,282 L1135,285Z" fill="{WARM}"/>
       <path d="M1140,302 L1145,285 L1140,288 L1135,285Z" fill="{MUTED}"/>
     </g>
     <text x="1136" y="259" class="small" style="fill:{TEXT}">N</text>
